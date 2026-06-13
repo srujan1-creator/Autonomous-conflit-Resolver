@@ -4,7 +4,7 @@ import json
 import asyncio
 import threading
 from flask import Flask, jsonify, request, send_from_directory
-import websockets
+from flask_sock import Sock
 
 app = Flask(__name__, static_folder="static", static_url_path="")
 
@@ -51,46 +51,42 @@ def add_header(response):
     return response
 
 # Global WebSocket communication state
+sock = Sock(app)
 CONNECTED_CLIENTS = set()
-loop = None
 
-async def ws_handler(websocket):
+@sock.route("/ws")
+def ws_handler(ws):
     """Handle connection lifecycle of WebSocket clients."""
-    CONNECTED_CLIENTS.add(websocket)
+    CONNECTED_CLIENTS.add(ws)
     try:
-        await websocket.send(json.dumps({
+        ws.send(json.dumps({
             "type": "status", 
             "message": "Connected to Autonomous Conflict A2A Broker."
         }))
-        async for message in websocket:
-            pass  # Read-only broker pipeline for the client visualization
-    except websockets.exceptions.ConnectionClosed:
+        while True:
+            message = ws.receive()
+            if message is None:
+                break
+    except Exception:
         pass
     finally:
-        CONNECTED_CLIENTS.remove(websocket)
-
-async def ws_broadcast(message_dict):
-    """Broadcast JSON payload to all connected clients."""
-    if CONNECTED_CLIENTS:
-        message_str = json.dumps(message_dict)
-        await asyncio.gather(*[client.send(message_str) for client in CONNECTED_CLIENTS])
+        try:
+            CONNECTED_CLIENTS.remove(ws)
+        except KeyError:
+            pass
 
 def send_ws_update(message_dict):
     """Bridge function to send updates from the Flask/Worker threads to WebSocket clients."""
-    if loop:
-        asyncio.run_coroutine_threadsafe(ws_broadcast(message_dict), loop)
-
-async def main_ws():
-    async with websockets.serve(ws_handler, "0.0.0.0", 5001):
-        print("WebSocket Server running on ws://0.0.0.0:5001")
-        await asyncio.Future()  # run forever
-
-def start_websocket_server():
-    """Start WebSocket server on port 5001 inside a background event loop."""
-    global loop
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(main_ws())
+    if CONNECTED_CLIENTS:
+        message_str = json.dumps(message_dict)
+        for client in list(CONNECTED_CLIENTS):
+            try:
+                client.send(message_str)
+            except Exception:
+                try:
+                    CONNECTED_CLIENTS.remove(client)
+                except KeyError:
+                    pass
 
 
 # ---------------------------------------------------------
@@ -418,10 +414,7 @@ def run_negotiation_flow(event_scale: str, traffic_load: str, blocked_cells: lis
 
 
 if __name__ == "__main__":
-    # Start WebSocket broker on separate daemon thread
-    ws_thread = threading.Thread(target=start_websocket_server, daemon=True)
-    ws_thread.start()
-    
+    port = int(os.environ.get("PORT", 5000))
     # Start Flask API server
-    print("Flask Server running on http://0.0.0.0:5000")
-    app.run(host="0.0.0.0", port=5000)
+    print(f"Flask Server running on http://0.0.0.0:{port}")
+    app.run(host="0.0.0.0", port=port)

@@ -59,8 +59,9 @@ let blockedCells = [];
 // WebSocket Connection Manager
 // ---------------------------------------------------------
 function connectWebSocket() {
-    const wsHost = window.location.hostname || "localhost";
-    socket = new WebSocket(`ws://${wsHost}:5001`);
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const host = window.location.host || "localhost:5000";
+    socket = new WebSocket(`${protocol}//${host}/ws`);
 
     socket.onopen = () => {
         console.log("WebSocket connected to broker.");
