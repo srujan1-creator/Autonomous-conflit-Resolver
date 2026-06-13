@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.db
+users.json
+memory_bank.json
+.vscode/
+.idea/
+*.log

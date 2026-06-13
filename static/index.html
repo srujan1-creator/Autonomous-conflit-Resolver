@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomous Conflict Resolver | A2A Protocol Dashboard</title>
+    <!-- Google Fonts: Inter and Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="login-container" class="login-wrapper">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        
+        <div class="glass-card login-card" id="login-card">
+            <div class="login-header">
+                <span class="login-logo-icon">🏗️</span>
+                <h2>Autonomous Conflict Resolver</h2>
+                <p class="login-subtitle">A2A Protocol Negotiation Platform</p>
+            </div>
+            
+            <div class="auth-tabs">
+                <button id="tab-login" class="auth-tab active">Sign In</button>
+                <button id="tab-signup" class="auth-tab">Create Account</button>
+            </div>
+
+            <div id="login-error" class="login-error-msg hidden">
+                ⚠️ Invalid username or password.
+            </div>
+
+            <div id="signup-message" class="signup-message-msg hidden"></div>
+            
+            <!-- Login Form -->
+            <div id="login-form-container" class="auth-form-wrapper">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Enter username..." autocomplete="off">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter password..." autocomplete="off">
+                </div>
+                
+                <button id="login-btn" class="primary-btn login-submit-btn">Authenticate System</button>
+            </div>
+
+            <!-- Signup Form -->
+            <div id="signup-form-container" class="auth-form-wrapper hidden">
+                <div class="form-group">
+                    <label for="signup-username">Username</label>
+                    <input type="text" id="signup-username" placeholder="Choose a username..." autocomplete="off">
+                </div>
+                
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" placeholder="Choose a password..." autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-name">Full Name</label>
+                    <input type="text" id="signup-name" placeholder="Enter your name..." autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-role">System Role</label>
+                    <select id="signup-role" class="auth-select">
+                        <option value="Lead Orchestrator">Lead Orchestrator</option>
+                        <option value="Traffic Supervisor">Traffic Supervisor</option>
+                        <option value="Event Coordinator">Event Coordinator</option>
+                        <option value="System Auditor">System Auditor</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Profile Avatar</label>
+                    <div class="avatar-grid" id="signup-avatar-grid">
+                        <div class="avatar-option selected" data-emoji="👤">👤</div>
+                        <div class="avatar-option" data-emoji="👨‍💻">👨‍💻</div>
+                        <div class="avatar-option" data-emoji="👩‍💻">👩‍💻</div>
+                        <div class="avatar-option" data-emoji="🧙‍♂️">🧙‍♂️</div>
+                        <div class="avatar-option" data-emoji="🚀">🚀</div>
+                        <div class="avatar-option" data-emoji="🤖">🤖</div>
+                        <div class="avatar-option" data-emoji="🕵️‍♂️">🕵️‍♂️</div>
+                        <div class="avatar-option" data-emoji="👑">👑</div>
+                        <div class="avatar-option" data-emoji="🌟">🌟</div>
+                    </div>
+                </div>
+                
+                <button id="signup-btn" class="primary-btn login-submit-btn" style="margin-top: 15px;">Register User</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Container -->
+    <div id="dashboard-container" class="glass-bg-container hidden">
+        <!-- Floating Ambient Glows -->
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="logo-area">
+                    <span class="logo-icon">🏗️</span>
+                    <h1>Autonomous Conflict Resolver</h1>
+                </div>
+                <p class="subtitle">Agent-to-Agent (A2A) Protocol Negotiation & Automated LLM-as-Judge Evaluation</p>
+            </div>
+            
+            <div class="header-right">
+                <div class="status-panel">
+                    <div id="ws-status" class="status-badge offline">
+                        <span class="pulse-dot"></span>
+                        <span class="status-text">Broker Offline</span>
+                    </div>
+                    <div id="api-status" class="status-badge simulation">
+                        <span class="status-text">Simulation Mode</span>
+                    </div>
+                </div>
+
+                <!-- User Profile Card -->
+                <div id="user-profile" class="user-profile-badge hidden">
+                    <div class="user-avatar" id="profile-avatar" title="Click to change avatar">👤</div>
+                    <div class="user-info">
+                        <span id="profile-name" class="user-name" contenteditable="true" spellcheck="false" title="Click to edit name">System Admin</span>
+                        <span id="profile-role" class="user-role" contenteditable="true" spellcheck="false" title="Click to edit role">Lead Orchestrator</span>
+                    </div>
+                    <button id="logout-btn" class="logout-btn-icon" title="Logout System">🚪</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard-grid">
+            
+            <!-- LEFT PANEL: Controls & Network Graph -->
+            <section class="grid-col col-left">
+                
+                <!-- Card 1: Configuration Panel -->
+                <div class="glass-card control-card">
+                    <div class="card-header">
+                        <h2>System Constraints</h2>
+                        <span class="card-icon">⚙️</span>
+                    </div>
+                    <div class="card-body">
+                        <!-- Sliders -->
+                        <div class="control-group">
+                            <div class="control-label">
+                                <span>Event Footprint Scale</span>
+                                <span id="event-scale-val" class="badge logistics-badge">Medium</span>
+                            </div>
+                            <input type="range" id="event-scale" min="0" max="2" value="1" class="slider slider-logistics">
+                            <span class="slider-helper">Controls how aggressively the Logistics Agent requests lanes.</span>
+                        </div>
+                        
+                        <div class="control-group">
+                            <div class="control-label">
+                                <span>Transit Commute Load</span>
+                                <span id="traffic-load-val" class="badge transit-badge">Medium</span>
+                            </div>
+                            <input type="range" id="traffic-load" min="0" max="2" value="1" class="slider slider-transit">
+                            <span class="slider-helper">Controls how strictly the Transit Agent protects transit corridors.</span>
+                        </div>
+
+                        <!-- Sandbox Mode Configuration -->
+                        <div class="sandbox-toggle-wrapper" style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 12px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px;">
+                            <span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">🔧 Sandbox Obstacles Mode</span>
+                            <label class="switch" style="position: relative; display: inline-block; width: 34px; height: 20px; flex-shrink: 0;">
+                                <input type="checkbox" id="sandbox-toggle" style="opacity: 0; width: 0; height: 0;">
+                                <span class="slider-toggle round" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.1); transition: .4s; border-radius: 20px;"></span>
+                            </label>
+                        </div>
+                        <span id="sandbox-help" class="slider-helper hidden" style="color: var(--amber-color); margin-top: 4px; display: block;">⚠️ Active: Click on grid cells to place construction/road hazard blocks.</span>
+
+                        <!-- API Key Section -->
+                        <div class="api-key-toggle-wrapper">
+                            <button id="toggle-api-btn" class="secondary-btn btn-small">Configure Gemini API Key</button>
+                        </div>
+                        
+                        <div id="api-key-container" class="api-key-container hidden">
+                            <div class="api-input-wrapper">
+                                <input type="password" id="api-key-input" placeholder="Paste Gemini API Key here...">
+                                <button id="save-api-btn" class="primary-btn btn-small">Save</button>
+                            </div>
+                            <p class="api-help">Keys are saved locally in server environment variables only.</p>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons-group">
+                            <button id="run-btn" class="primary-btn run-btn">Resolve Conflict</button>
+                            <button id="reset-btn" class="secondary-btn">Reset Grid</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: A2A Network Graph -->
+                <div class="glass-card network-card">
+                    <div class="card-header">
+                        <h2>A2A Communication Pulse Graph</h2>
+                        <span class="card-icon">📡</span>
+                    </div>
+                    <div class="card-body network-body">
+                        <div class="network-container">
+                            <svg class="network-svg">
+                                <!-- Connection lines -->
+                                <line x1="15%" y1="20%" x2="50%" y2="45%" id="line-logistics-broker" class="node-line"></line>
+                                <line x1="85%" y1="20%" x2="50%" y2="45%" id="line-transit-broker" class="node-line"></line>
+                                <line x1="50%" y1="45%" x2="15%" y2="80%" id="line-broker-memory" class="node-line"></line>
+                                <line x1="50%" y1="45%" x2="85%" y2="80%" id="line-broker-judge" class="node-line"></line>
+                                
+                                <!-- Pulse dots -->
+                                <circle r="5" cx="0" cy="0" id="pulse-dot-active" class="pulse-dot-anim hidden"></circle>
+                            </svg>
+
+                            <!-- Nodes -->
+                            <div class="network-node logistics-node" id="node-logistics">
+                                <div class="node-icon">💼</div>
+                                <span class="node-label">Logistics Agent</span>
+                                <span class="node-subtitle">Microservice</span>
+                            </div>
+
+                            <div class="network-node transit-node" id="node-transit">
+                                <div class="node-icon">🚌</div>
+                                <span class="node-label">Transit Agent</span>
+                                <span class="node-subtitle">Microservice</span>
+                            </div>
+
+                            <div class="network-node broker-node" id="node-broker">
+                                <div class="node-icon">🌀</div>
+                                <span class="node-label">Pub/Sub Broker</span>
+                                <span class="node-subtitle">WebSockets</span>
+                            </div>
+
+                            <div class="network-node memory-node" id="node-memory">
+                                <div class="node-icon">💾</div>
+                                <span class="node-label">Memory Bank</span>
+                                <span class="node-subtitle">Native State</span>
+                            </div>
+
+                            <div class="network-node judge-node" id="node-judge">
+                                <div class="node-icon">⚖️</div>
+                                <span class="node-label">LLM Evaluator</span>
+                                <span class="node-subtitle">Gemini Judge</span>
+                            </div>
+                        </div>
+                        <div class="network-telemetry">
+                            <span class="telemetry-label">A2A Activity:</span>
+                            <span id="network-activity" class="telemetry-value text-muted">Awaiting signal...</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CENTER PANEL: Avenue Visualizer & Telemetry -->
+            <section class="grid-col col-center">
+                
+                <!-- Card 3: Avenue Grid Visualizer -->
+                <div class="glass-card visualizer-card">
+                    <div class="card-header">
+                        <h2>Avenue Asset Monitor (Main Street Blocks 1-5)</h2>
+                        <div class="visualizer-legend">
+                            <span class="legend-item"><span class="legend-color color-free"></span>Free</span>
+                            <span class="legend-item"><span class="legend-color color-logistics"></span>Logistics</span>
+                            <span class="legend-item"><span class="legend-color color-transit"></span>Transit</span>
+                            <span class="legend-item"><span class="legend-color color-conflict"></span>Race Overlap</span>
+                        </div>
+                    </div>
+                    <div class="card-body visualizer-body">
+                        
+                        <!-- Main Avenue Layout -->
+                        <div class="avenue-container">
+                            <!-- Direction Flow Indicator -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 8px 8px 8px; font-size: 10px; font-weight: 700; font-family: 'Outfit', sans-serif; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--text-secondary); letter-spacing: 0.5px; margin-bottom: 6px;">
+                                <span>⬅️ WESTBOUND ROADWAY FLOW</span>
+                                <span style="flex-grow: 1; border-top: 1px dashed rgba(255,255,255,0.08); margin: 0 16px;"></span>
+                                <span>EMERGENCY COMPLIANCE MONITOR ACTIVE 🚨</span>
+                            </div>
+                            <!-- Column labels (Blocks) -->
+                            <div class="avenue-row block-header-row">
+                                <div class="lane-label-col"></div>
+                                <div class="block-header">Block 1<span class="block-desc">Inbound</span></div>
+                                <div class="block-header">Block 2<span class="block-desc">Central West</span></div>
+                                <div class="block-header">Block 3<span class="block-desc">Core Plaza</span></div>
+                                <div class="block-header">Block 4<span class="block-desc">Central East</span></div>
+                                <div class="block-header">Block 5<span class="block-desc">Outbound</span></div>
+                            </div>
+                            
+                            <!-- Lane 1 (Bus Lane) -->
+                            <div class="avenue-row" id="lane-row-1">
+                                <div class="lane-label-col">
+                                    <span class="lane-num">Lane 1</span>
+                                    <span class="lane-name">Bus Route</span>
+                                </div>
+                                <div class="avenue-cell" data-block="1" data-lane="1"></div>
+                                <div class="avenue-cell" data-block="2" data-lane="1"></div>
+                                <div class="avenue-cell" data-block="3" data-lane="1"></div>
+                                <div class="avenue-cell" data-block="4" data-lane="1"></div>
+                                <div class="avenue-cell" data-block="5" data-lane="1"></div>
+                            </div>
+
+                            <!-- Lane 2 (General Lane 1) -->
+                            <div class="avenue-row" id="lane-row-2">
+                                <div class="lane-label-col">
+                                    <span class="lane-num">Lane 2</span>
+                                    <span class="lane-name">General 1</span>
+                                </div>
+                                <div class="avenue-cell" data-block="1" data-lane="2"></div>
+                                <div class="avenue-cell" data-block="2" data-lane="2"></div>
+                                <div class="avenue-cell" data-block="3" data-lane="2"></div>
+                                <div class="avenue-cell" data-block="4" data-lane="2"></div>
+                                <div class="avenue-cell" data-block="5" data-lane="2"></div>
+                            </div>
+
+                            <!-- Lane 3 (General Lane 2) -->
+                            <div class="avenue-row" id="lane-row-3">
+                                <div class="lane-label-col">
+                                    <span class="lane-num">Lane 3</span>
+                                    <span class="lane-name">General 2</span>
+                                </div>
+                                <div class="avenue-cell" data-block="1" data-lane="3"></div>
+                                <div class="avenue-cell" data-block="2" data-lane="3"></div>
+                                <div class="avenue-cell" data-block="3" data-lane="3"></div>
+                                <div class="avenue-cell" data-block="4" data-lane="3"></div>
+                                <div class="avenue-cell" data-block="5" data-lane="3"></div>
+                            </div>
+
+                            <!-- Lane 4 (Emergency Lane) -->
+                            <div class="avenue-row" id="lane-row-4">
+                                <div class="lane-label-col">
+                                    <span class="lane-num">Lane 4</span>
+                                    <span class="lane-name">Emergency</span>
+                                </div>
+                                <div class="avenue-cell" data-block="1" data-lane="4"></div>
+                                <div class="avenue-cell" data-block="2" data-lane="4"></div>
+                                <div class="avenue-cell" data-block="3" data-lane="4"></div>
+                                <div class="avenue-cell" data-block="4" data-lane="4"></div>
+                                <div class="avenue-cell" data-block="5" data-lane="4"></div>
+                            </div>
+                        </div>
+
+                        <!-- Off-peak allowances -->
+                        <div id="allowance-bar" class="allowance-bar hidden">
+                            <span class="allowance-badge">Off-Peak Setup Privilege:</span>
+                            <span id="allowance-text">Lanes 4 in Blocks 2-4 from 12:00-16:00 (Pre-clearance required by 16:00)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Telemetry Dashboard -->
+                <div class="glass-card telemetry-card">
+                    <div class="card-header">
+                        <h2>Runtime Telemetry Dashboard</h2>
+                        <span class="card-icon">📊</span>
+                    </div>
+                    <div class="card-body telemetry-body">
+                        
+                        <!-- Telemetry Gauges Grid -->
+                        <div class="telemetry-grid">
+                            
+                            <!-- Delay Metric -->
+                            <div class="metric-box">
+                                <div class="gauge-wrapper">
+                                    <svg viewBox="0 0 100 100" class="gauge-svg">
+                                        <circle cx="50" cy="50" r="40" class="gauge-bg"></circle>
+                                        <circle cx="50" cy="50" r="40" id="gauge-delay" class="gauge-fill val-cyan" stroke-dasharray="251" stroke-dashoffset="251"></circle>
+                                    </svg>
+                                    <div class="gauge-label-container">
+                                        <span id="telemetry-delay" class="gauge-value">0</span>
+                                        <span class="gauge-unit">mins</span>
+                                    </div>
+                                </div>
+                                <span class="metric-title">Commute Delay</span>
+                            </div>
+
+                            <!-- Community Impact -->
+                            <div class="metric-box">
+                                <div class="gauge-wrapper">
+                                    <svg viewBox="0 0 100 100" class="gauge-svg">
+                                        <circle cx="50" cy="50" r="40" class="gauge-bg"></circle>
+                                        <circle cx="50" cy="50" r="40" id="gauge-impact" class="gauge-fill val-amber" stroke-dasharray="251" stroke-dashoffset="251"></circle>
+                                    </svg>
+                                    <div class="gauge-label-container">
+                                        <span id="telemetry-impact" class="gauge-value">0%</span>
+                                    </div>
+                                </div>
+                                <span class="metric-title">Community Impact</span>
+                            </div>
+
+                            <!-- Financial Viability -->
+                            <div class="metric-box">
+                                <div class="gauge-wrapper">
+                                    <svg viewBox="0 0 100 100" class="gauge-svg">
+                                        <circle cx="50" cy="50" r="40" class="gauge-bg"></circle>
+                                        <circle cx="50" cy="50" r="40" id="gauge-financial" class="gauge-fill val-magenta" stroke-dasharray="251" stroke-dashoffset="251"></circle>
+                                    </svg>
+                                    <div class="gauge-label-container">
+                                        <span id="telemetry-financial" class="gauge-value">0%</span>
+                                    </div>
+                                </div>
+                                <span class="metric-title">Financial Viability</span>
+                            </div>
+
+                            <!-- Safety Corridors -->
+                            <div class="metric-box">
+                                <div class="safety-indicator-wrapper">
+                                    <div id="safety-light" class="safety-light inactive"></div>
+                                    <span id="safety-status-text" class="safety-text">No Active Plan</span>
+                                </div>
+                                <span class="metric-title">Safety Corridor</span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RIGHT PANEL: Negotiation Transcript & Evaluation -->
+            <section class="grid-col col-right">
+                
+                <!-- Card 5: A2A Negotiation Logs -->
+                <div class="glass-card timeline-card">
+                    <div class="card-header">
+                        <h2>A2A Negotiation Log Pipeline</h2>
+                        <span class="card-icon">💬</span>
+                    </div>
+                    <div class="card-body timeline-body" id="timeline-container">
+                        <!-- Empty State -->
+                        <div id="timeline-empty" class="timeline-empty">
+                            <p>Launch a conflict resolution run to witness inter-agent Pub/Sub negotiation pulses.</p>
+                        </div>
+                        
+                        <!-- Populated dynamic timeline will append here -->
+                        <div id="timeline-flow" class="timeline-flow hidden"></div>
+                    </div>
+                </div>
+
+                <!-- Card 6: Evaluator scorecard -->
+                <div class="glass-card judge-card">
+                    <div class="card-header">
+                        <h2>LLM-as-Judge Evaluation Scorecard</h2>
+                        <span class="card-icon">👨‍⚖️</span>
+                    </div>
+                    <div class="card-body judge-body">
+                        <!-- Score Display -->
+                        <div class="judge-score-display">
+                            <div class="score-radial">
+                                <span id="judge-overall-score" class="score-num">--</span>
+                                <span class="score-lbl">Score</span>
+                            </div>
+                            <div class="judge-verdict-wrapper">
+                                <span class="verdict-label">Judge Verdict</span>
+                                <span id="judge-verdict" class="verdict-badge status-none">PENDING</span>
+                            </div>
+                        </div>
+
+                        <!-- Rubric List -->
+                        <div class="rubric-list-wrapper">
+                            <div class="rubric-item" id="rubric-safety">
+                                <div class="rubric-status status-none"></div>
+                                <div class="rubric-details">
+                                    <h3>Safety Corridors (100% Clear Peak)</h3>
+                                    <p id="rubric-safety-text" class="text-muted">Awaiting evaluation...</p>
+                                </div>
+                            </div>
+                            
+                            <div class="rubric-item" id="rubric-impact">
+                                <div class="rubric-status status-none"></div>
+                                <div class="rubric-details">
+                                    <h3>Community Impact (&lt; 40%)</h3>
+                                    <p id="rubric-impact-text" class="text-muted">Awaiting evaluation...</p>
+                                </div>
+                            </div>
+
+                            <div class="rubric-item" id="rubric-financial">
+                                <div class="rubric-status status-none"></div>
+                                <div class="rubric-details">
+                                    <h3>Financial Viability (Optimize Reuse)</h3>
+                                    <p id="rubric-financial-text" class="text-muted">Awaiting evaluation...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Judge Summary -->
+                        <div class="judge-summary-wrapper">
+                            <h3>Evaluation Summary</h3>
+                            <p id="judge-summary-text" class="text-muted">The evaluator has not received the final negotiated agreement yet.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+        </main>
+    </div>
+
+    <!-- JSON Inspector Modal (Simple overlay for detailed token inspection) -->
+    <div id="json-modal" class="modal hidden">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h3>Structured Route Token Details</h3>
+                <span id="close-modal" class="close-btn">&times;</span>
+            </div>
+            <pre class="modal-body"><code id="modal-code" class="language-json"></code></pre>
+        </div>
+    </div>
+
+    <!-- Floating Helper Chatbot -->
+    <div id="chat-toggle" class="chat-toggle-btn">
+        <span class="chat-toggle-icon">🤖</span>
+        <span class="chat-toggle-text">System Guide</span>
+    </div>
+
+    <div id="helper-chat-widget" class="helper-chat-card glass-card hidden">
+        <div class="chat-header">
+            <div class="chat-agent-info">
+                <div class="chat-agent-avatar">🤖</div>
+                <div class="chat-agent-meta">
+                    <h3>Helper Agent</h3>
+                    <span class="chat-status"><span class="status-dot"></span>Online</span>
+                </div>
+            </div>
+            <span id="close-chat" class="chat-close-btn">&times;</span>
+        </div>
+        
+        <div class="chat-messages" id="chat-messages-container">
+            <div class="chat-bubble helper-bubble">
+                <p>Hello! I am the A2A Helper Agent. I can explain the system architecture, how the Logistics & Transit agents negotiate, or help you configure your Gemini API Key. Ask me anything!</p>
+            </div>
+            
+            <div class="chat-quick-actions" id="chat-quick-actions">
+                <button class="quick-action-btn" data-query="Explain the A2A Loop">Explain A2A Loop</button>
+                <button class="quick-action-btn" data-query="How to use Gemini Live Mode?">Use Live Mode</button>
+                <button class="quick-action-btn" data-query="What is the Evaluator rubric?">What is Rubric?</button>
+            </div>
+        </div>
+        
+        <div class="chat-input-area">
+            <input type="text" id="chat-user-input" placeholder="Type a question...">
+            <button id="chat-send-btn" class="chat-send-btn">➔</button>
+        </div>
+    </div>
+
+    <!-- main app scripts -->
+    <script src="app.js"></script>
+</body>
+</html>
