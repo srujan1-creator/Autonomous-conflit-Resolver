@@ -12,12 +12,120 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Login Screen -->
-    <div id="login-container" class="login-wrapper">
+    <!-- Product Landing Page Container -->
+    <div id="landing-container" class="landing-page-wrapper">
+        <!-- Floating Nav Bar -->
+        <nav class="landing-navbar">
+            <div class="nav-brand">
+                <span class="nav-logo-icon">🏗️</span>
+                <span class="nav-brand-text">Autonomous Conflict Resolver</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features-section">Features</a>
+                <a href="#architecture-section">Architecture</a>
+                <a href="https://github.com/srujan1-creator/Autonomous-conflit-Resolver" target="_blank" class="nav-github-link">GitHub</a>
+                <button id="nav-launch-btn" class="nav-launch-btn">Launch Dashboard</button>
+            </div>
+        </nav>
+
+        <!-- Ambient Background Glows -->
         <div class="glow-orb orb-1"></div>
         <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+
+        <!-- Hero Section -->
+        <header class="landing-hero">
+            <div class="hero-tagline">
+                <span class="hero-badge">✨ Next-Gen Multi-Agent Systems</span>
+            </div>
+            <h1>Resolve Resource Races with <span class="highlight-text">Agentic Collaboration</span></h1>
+            <p class="hero-subtitle">
+                An interactive orchestration dashboard visualizing turn-based Agent-to-Agent (A2A) negotiation protocol logs, local state memory banks, and autonomous LLM-as-Judge evaluations.
+            </p>
+            <div class="hero-actions">
+                <button id="hero-launch-btn" class="primary-btn hero-btn">Launch Simulator</button>
+                <a href="#architecture-section" class="secondary-btn hero-btn">Explore Architecture</a>
+            </div>
+        </header>
+
+        <!-- Interactive A2A Flow Diagram Section -->
+        <section id="architecture-section" class="landing-section">
+            <div class="section-header">
+                <h2>Autonomous A2A Protocol Flow</h2>
+                <p>Observe how conflicting microservices negotiate solutions dynamically over WebSockets</p>
+            </div>
+            <div class="flow-diagram-card glass-card">
+                <div class="flow-nodes-wrapper">
+                    <div class="flow-node logistics-node-lite">
+                        <div class="node-icon">💼</div>
+                        <h4>Logistics Agent</h4>
+                        <p>Requests blocks for carnival</p>
+                    </div>
+                    <div class="flow-connector">
+                        <div class="connector-line"></div>
+                        <div class="connector-pulse"></div>
+                    </div>
+                    <div class="flow-node broker-node-lite">
+                        <div class="node-icon">🌀</div>
+                        <h4>Pub/Sub Broker</h4>
+                        <p>Handles message payloads</p>
+                    </div>
+                    <div class="flow-connector">
+                        <div class="connector-line"></div>
+                        <div class="connector-pulse reverse"></div>
+                    </div>
+                    <div class="flow-node transit-node-lite">
+                        <div class="node-icon">🚌</div>
+                        <h4>Transit Agent</h4>
+                        <p>Protects commuter corridors</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Showcase Section -->
+        <section id="features-section" class="landing-section">
+            <div class="section-header">
+                <h2>System Capabilities</h2>
+                <p>Advanced features engineered for autonomous conflict resolution and observability</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card glass-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>Turn-Based Negotiation</h3>
+                    <p>Agents exchange JSON proposals, evaluating concessions to resolve block closures automatically.</p>
+                </div>
+                <div class="feature-card glass-card">
+                    <div class="feature-icon">👨‍⚖️</div>
+                    <h3>LLM-as-Judge Evaluation</h3>
+                    <p>An autonomous evaluator scores plan compliance against safety, delay, and capacity rubrics.</p>
+                </div>
+                <div class="feature-card glass-card">
+                    <div class="feature-icon">🚧</div>
+                    <h3>Dynamic Sandbox Editor</h3>
+                    <p>Draw construction zones and road blocks directly on the grid to force real-time adaptive routing.</p>
+                </div>
+                <div class="feature-card glass-card">
+                    <div class="feature-icon">💾</div>
+                    <h3>Memory Bank State</h3>
+                    <p>Persists agent proposal tokens and evaluation history to a local JSON database across runs.</p>
+                </div>
+            </div>
+        </section>
         
+        <footer class="landing-footer">
+            <p>&copy; 2026 Autonomous Conflict Resolver. Built with Gemini AI & local ADK framework.</p>
+        </footer>
+    </div>
+
+    <!-- Authentication Modal Overlay -->
+    <div id="auth-modal" class="modal-overlay hidden">
+        <div class="modal-backdrop"></div>
+        <div class="glow-orb orb-modal-1"></div>
         <div class="glass-card login-card" id="login-card">
+            <!-- Close button for modal -->
+            <span id="close-auth-modal" class="close-modal-btn">&times;</span>
+            
             <div class="login-header">
                 <span class="login-logo-icon">🏗️</span>
                 <h2>Autonomous Conflict Resolver</h2>

@@ -549,7 +549,12 @@ function resetVisualization() {
 // ==========================================================================
 // Authentication & Session Controller (Full-Stack)
 // ==========================================================================
-const loginContainer = document.getElementById("login-container");
+const landingContainer = document.getElementById("landing-container");
+const authModal = document.getElementById("auth-modal");
+const closeAuthModal = document.getElementById("close-auth-modal");
+const navLaunchBtn = document.getElementById("nav-launch-btn");
+const heroLaunchBtn = document.getElementById("hero-launch-btn");
+
 const dashboardContainer = document.getElementById("dashboard-container");
 const usernameInput = document.getElementById("username");
 const passwordInput = document.getElementById("password");
@@ -624,7 +629,7 @@ function loadUserProfile() {
 function checkAuthStatus() {
     if (sessionStorage.getItem("resolver_authenticated") === "true") {
         // Already authenticated, bypass login
-        loginContainer.classList.add("hidden");
+        landingContainer.classList.add("hidden");
         dashboardContainer.classList.remove("hidden");
         userProfile.classList.remove("hidden");
         
@@ -632,12 +637,54 @@ function checkAuthStatus() {
         connectWebSocket();
         fetchConfig();
     } else {
-        // Show login screen
-        loginContainer.classList.remove("hidden");
+        // Show landing page
+        landingContainer.classList.remove("hidden");
         dashboardContainer.classList.add("hidden");
         userProfile.classList.add("hidden");
-        usernameInput.focus();
     }
+}
+
+function openAuthModal() {
+    authModal.classList.remove("hidden");
+    usernameInput.focus();
+}
+
+function closeAuthModalWindow() {
+    authModal.classList.add("hidden");
+    loginError.classList.add("hidden");
+    signupMessage.classList.add("hidden");
+}
+
+// Bind modal triggers
+navLaunchBtn.addEventListener("click", () => {
+    if (sessionStorage.getItem("resolver_authenticated") === "true") {
+        transitionToDashboard();
+    } else {
+        openAuthModal();
+    }
+});
+
+heroLaunchBtn.addEventListener("click", () => {
+    openAuthModal();
+});
+
+closeAuthModal.addEventListener("click", closeAuthModalWindow);
+authModal.querySelector(".modal-backdrop").addEventListener("click", closeAuthModalWindow);
+
+function transitionToDashboard() {
+    landingContainer.classList.add("fade-out-page");
+    
+    setTimeout(() => {
+        landingContainer.classList.add("hidden");
+        landingContainer.classList.remove("fade-out-page");
+        
+        dashboardContainer.className = "glass-bg-container fade-in-page";
+        userProfile.classList.remove("hidden");
+        
+        loadUserProfile();
+        connectWebSocket();
+        fetchConfig();
+    }, 600);
 }
 
 async function handleLoginSubmit() {
@@ -668,20 +715,9 @@ async function handleLoginSubmit() {
             localStorage.setItem("user_profile_avatar", result.profile.avatar);
             
             loginError.classList.add("hidden");
+            closeAuthModalWindow();
             
-            // Fade out transition
-            loginContainer.style.opacity = "0";
-            loginContainer.style.transform = "scale(1.05)";
-            
-            setTimeout(() => {
-                loginContainer.classList.add("hidden");
-                dashboardContainer.classList.remove("hidden");
-                userProfile.classList.remove("hidden");
-                
-                loadUserProfile();
-                connectWebSocket();
-                fetchConfig();
-            }, 500);
+            transitionToDashboard();
         } else {
             throw new Error(result.message || "Invalid username or password.");
         }
@@ -806,7 +842,22 @@ profileAvatar.addEventListener("click", () => {
 
 logoutBtn.addEventListener("click", () => {
     sessionStorage.removeItem("resolver_authenticated");
-    window.location.reload();
+    
+    // Smooth transition back to landing page
+    dashboardContainer.classList.add("fade-out-page");
+    
+    setTimeout(() => {
+        dashboardContainer.classList.add("hidden");
+        dashboardContainer.classList.remove("fade-out-page");
+        dashboardContainer.className = "glass-bg-container hidden";
+        userProfile.classList.add("hidden");
+        
+        landingContainer.className = "landing-page-wrapper fade-in-page";
+        
+        setTimeout(() => {
+            landingContainer.className = "landing-page-wrapper";
+        }, 800);
+    }, 600);
 });
 
 loginBtn.addEventListener("click", handleLoginSubmit);
