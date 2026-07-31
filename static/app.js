@@ -582,63 +582,28 @@ function resetVisualization() {
 // ==========================================================================
 // Authentication & Session Controller (Full-Stack)
 // ==========================================================================
-const landingContainer = document.getElementById("landing-container");
-const authModal = document.getElementById("auth-modal");
-const closeAuthModal = document.getElementById("close-auth-modal");
-const navLaunchBtn = document.getElementById("nav-launch-btn");
-const heroLaunchBtn = document.getElementById("hero-launch-btn");
-
-const dashboardContainer = document.getElementById("dashboard-container");
-const usernameInput = document.getElementById("username");
-const passwordInput = document.getElementById("password");
-const loginBtn = document.getElementById("login-btn");
-const loginError = document.getElementById("login-error");
-const loginCard = document.getElementById("login-card");
-
-// Tab Elements
-const tabLogin = document.getElementById("tab-login");
-const tabSignup = document.getElementById("tab-signup");
-const loginFormContainer = document.getElementById("login-form-container");
-const signupFormContainer = document.getElementById("signup-form-container");
-const signupMessage = document.getElementById("signup-message");
-
-// Signup Form Elements
-const signupUsernameInput = document.getElementById("signup-username");
-const signupPasswordInput = document.getElementById("signup-password");
-const signupNameInput = document.getElementById("signup-name");
-const signupRoleSelect = document.getElementById("signup-role");
-const signupBtn = document.getElementById("signup-btn");
-const signupAvatarGrid = document.getElementById("signup-avatar-grid");
-
-let selectedAvatarEmoji = "👤";
-
-// User Profile Badge Selectors
-const userProfile = document.getElementById("user-profile");
-const profileAvatar = document.getElementById("profile-avatar");
-const profileName = document.getElementById("profile-name");
-const profileRole = document.getElementById("profile-role");
-const logoutBtn = document.getElementById("logout-btn");
-
-const avatars = ["👤", "👨‍💻", "👩‍💻", "🧙‍♂️", "🚀", "🤖", "🕵️‍♂️", "👑", "🌟"];
-
 // Switch between tabs
-tabLogin.addEventListener("click", () => {
-    tabLogin.classList.add("active");
-    tabSignup.classList.remove("active");
-    loginFormContainer.classList.remove("hidden");
-    signupFormContainer.classList.add("hidden");
-    signupMessage.classList.add("hidden");
-    loginError.classList.add("hidden");
-});
+if (tabLogin) {
+    tabLogin.addEventListener("click", () => {
+        tabLogin.classList.add("active");
+        tabSignup.classList.remove("active");
+        loginFormContainer.classList.remove("hidden");
+        signupFormContainer.classList.add("hidden");
+        signupMessage.classList.add("hidden");
+        loginError.classList.add("hidden");
+    });
+}
 
-tabSignup.addEventListener("click", () => {
-    tabSignup.classList.add("active");
-    tabLogin.classList.remove("active");
-    signupFormContainer.classList.remove("hidden");
-    loginFormContainer.classList.add("hidden");
-    signupMessage.classList.add("hidden");
-    loginError.classList.add("hidden");
-});
+if (tabSignup) {
+    tabSignup.addEventListener("click", () => {
+        tabSignup.classList.add("active");
+        tabLogin.classList.remove("active");
+        signupFormContainer.classList.remove("hidden");
+        loginFormContainer.classList.add("hidden");
+        signupMessage.classList.add("hidden");
+        loginError.classList.add("hidden");
+    });
+}
 
 // Avatar selection grid in signup
 let selectedAvatarEmoji = "/images/avatar_admin.jpg";
