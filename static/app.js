@@ -687,21 +687,35 @@ function closeAuthModalWindow() {
     signupMessage.classList.add("hidden");
 }
 
-// Bind modal triggers
-navLaunchBtn.addEventListener("click", () => {
-    if (sessionStorage.getItem("resolver_authenticated") === "true") {
-        transitionToDashboard();
-    } else {
-        openAuthModal();
+// Bind launch triggers
+function launchSimulatorAction() {
+    playUiSound("click");
+    // Ensure user session is marked authenticated with default profile if not set
+    if (!sessionStorage.getItem("resolver_authenticated")) {
+        sessionStorage.setItem("resolver_authenticated", "true");
+        if (!localStorage.getItem("user_profile_name")) {
+            localStorage.setItem("user_profile_name", "System Admin");
+            localStorage.setItem("user_profile_role", "Lead Orchestrator");
+            localStorage.setItem("user_profile_avatar", "/images/avatar_admin.jpg");
+        }
     }
-});
+    transitionToDashboard();
+}
 
-heroLaunchBtn.addEventListener("click", () => {
-    openAuthModal();
-});
+if (navLaunchBtn) {
+    navLaunchBtn.addEventListener("click", launchSimulatorAction);
+}
 
-closeAuthModal.addEventListener("click", closeAuthModalWindow);
-authModal.querySelector(".modal-backdrop").addEventListener("click", closeAuthModalWindow);
+if (heroLaunchBtn) {
+    heroLaunchBtn.addEventListener("click", launchSimulatorAction);
+}
+
+if (closeAuthModal) {
+    closeAuthModal.addEventListener("click", closeAuthModalWindow);
+}
+if (authModal && authModal.querySelector(".modal-backdrop")) {
+    authModal.querySelector(".modal-backdrop").addEventListener("click", closeAuthModalWindow);
+}
 
 function transitionToDashboard() {
     landingContainer.classList.add("fade-out-page");
