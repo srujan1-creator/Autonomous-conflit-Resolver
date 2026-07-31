@@ -753,14 +753,16 @@ if (authModal && authModal.querySelector(".modal-backdrop")) {
 function transitionToDashboard() {
     if (landingContainer) {
         landingContainer.classList.add("hidden");
-        landingContainer.classList.remove("fade-out-page");
+        landingContainer.style.display = "none";
     }
     if (dashboardContainer) {
         dashboardContainer.classList.remove("hidden");
+        dashboardContainer.style.display = "block";
         dashboardContainer.className = "glass-bg-container fade-in-page";
     }
     if (userProfile) {
         userProfile.classList.remove("hidden");
+        userProfile.style.display = "flex";
     }
     
     try { loadUserProfile(); } catch (e) { console.error(e); }

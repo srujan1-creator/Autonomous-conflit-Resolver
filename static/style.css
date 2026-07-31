@@ -47,6 +47,11 @@ body {
     overflow-x: hidden;
 }
 
+/* Global Utility Classes */
+.hidden {
+    display: none !important;
+}
+
 /* Glassmorphic Background System with Fine Grid Overlay */
 .glass-bg-container {
     width: 100%;
