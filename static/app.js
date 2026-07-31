@@ -48,6 +48,39 @@ const jsonModal = document.getElementById("json-modal");
 const modalCode = document.getElementById("modal-code");
 const closeModal = document.getElementById("close-modal");
 
+// Landing & Auth Elements
+const landingContainer = document.getElementById("landing-container");
+const dashboardContainer = document.getElementById("dashboard-container");
+const navLaunchBtn = document.getElementById("nav-launch-btn");
+const heroLaunchBtn = document.getElementById("hero-launch-btn");
+const authModal = document.getElementById("auth-modal");
+const closeAuthModal = document.getElementById("close-auth-modal");
+
+const userProfile = document.getElementById("user-profile");
+const profileName = document.getElementById("profile-name");
+const profileRole = document.getElementById("profile-role");
+const profileAvatar = document.getElementById("profile-avatar");
+const logoutBtn = document.getElementById("logout-btn");
+
+const tabLogin = document.getElementById("tab-login");
+const tabSignup = document.getElementById("tab-signup");
+const loginFormContainer = document.getElementById("login-form-container");
+const signupFormContainer = document.getElementById("signup-form-container");
+const loginError = document.getElementById("login-error");
+const signupMessage = document.getElementById("signup-message");
+const loginCard = document.getElementById("login-card");
+
+const usernameInput = document.getElementById("username");
+const passwordInput = document.getElementById("password");
+const loginBtn = document.getElementById("login-btn");
+
+const signupUsernameInput = document.getElementById("signup-username");
+const signupPasswordInput = document.getElementById("signup-password");
+const signupNameInput = document.getElementById("signup-name");
+const signupRoleSelect = document.getElementById("signup-role");
+const signupAvatarGrid = document.getElementById("signup-avatar-grid");
+const signupBtn = document.getElementById("signup-btn");
+
 // State trackers
 let socket = null;
 let activeLogisticsPlan = null;
@@ -718,19 +751,21 @@ if (authModal && authModal.querySelector(".modal-backdrop")) {
 }
 
 function transitionToDashboard() {
-    landingContainer.classList.add("fade-out-page");
-    
-    setTimeout(() => {
+    if (landingContainer) {
         landingContainer.classList.add("hidden");
         landingContainer.classList.remove("fade-out-page");
-        
+    }
+    if (dashboardContainer) {
+        dashboardContainer.classList.remove("hidden");
         dashboardContainer.className = "glass-bg-container fade-in-page";
+    }
+    if (userProfile) {
         userProfile.classList.remove("hidden");
-        
-        loadUserProfile();
-        connectWebSocket();
-        fetchConfig();
-    }, 600);
+    }
+    
+    try { loadUserProfile(); } catch (e) { console.error(e); }
+    try { connectWebSocket(); } catch (e) { console.error(e); }
+    try { fetchConfig(); } catch (e) { console.error(e); }
 }
 
 async function handleLoginSubmit() {
