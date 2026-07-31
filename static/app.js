@@ -608,23 +608,55 @@ tabSignup.addEventListener("click", () => {
 });
 
 // Avatar selection grid in signup
-signupAvatarGrid.querySelectorAll(".avatar-option").forEach(option => {
-    option.addEventListener("click", () => {
-        signupAvatarGrid.querySelectorAll(".avatar-option").forEach(opt => opt.classList.remove("selected"));
-        option.classList.add("selected");
-        selectedAvatarEmoji = option.getAttribute("data-emoji");
+let selectedAvatarEmoji = "/images/avatar_admin.jpg";
+const avatars3D = [
+    "/images/avatar_admin.jpg",
+    "/images/avatar_dev_m.jpg",
+    "/images/avatar_dev_f.jpg",
+    "/images/logistics.jpg",
+    "/images/transit.jpg",
+    "/images/broker.jpg",
+    "/images/judge.jpg",
+    "/images/brand_logo.jpg",
+    "/images/chatbot_assistant.jpg"
+];
+
+if (signupAvatarGrid) {
+    signupAvatarGrid.querySelectorAll(".avatar-option").forEach(option => {
+        option.addEventListener("click", () => {
+            signupAvatarGrid.querySelectorAll(".avatar-option").forEach(opt => opt.classList.remove("selected"));
+            option.classList.add("selected");
+            selectedAvatarEmoji = option.getAttribute("data-avatar") || option.getAttribute("data-emoji") || "/images/avatar_admin.jpg";
+            playUiSound("click");
+        });
     });
-});
+}
 
 function loadUserProfile() {
     const savedName = localStorage.getItem("user_profile_name") || "System Admin";
     const savedRole = localStorage.getItem("user_profile_role") || "Lead Orchestrator";
-    const savedAvatar = localStorage.getItem("user_profile_avatar") || "👤";
+    const savedAvatar = localStorage.getItem("user_profile_avatar") || "/images/avatar_admin.jpg";
     
     profileName.textContent = savedName;
     profileRole.textContent = savedRole;
-    profileAvatar.textContent = savedAvatar;
+    
+    if (savedAvatar.startsWith("/") || savedAvatar.startsWith("http") || savedAvatar.includes(".jpg")) {
+        profileAvatar.innerHTML = `<img src="${savedAvatar}" alt="Profile Avatar" class="profile-3d-avatar-img">`;
+    } else {
+        profileAvatar.textContent = savedAvatar;
+    }
 }
+
+profileAvatar.addEventListener("click", () => {
+    let current = localStorage.getItem("user_profile_avatar") || "/images/avatar_admin.jpg";
+    let idx = avatars3D.indexOf(current);
+    if (idx === -1) idx = 0;
+    const nextIdx = (idx + 1) % avatars3D.length;
+    const nextAvatar = avatars3D[nextIdx];
+    localStorage.setItem("user_profile_avatar", nextAvatar);
+    loadUserProfile();
+    playUiSound("click");
+});
 
 function checkAuthStatus() {
     if (sessionStorage.getItem("resolver_authenticated") === "true") {
