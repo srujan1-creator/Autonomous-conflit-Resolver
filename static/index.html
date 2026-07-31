@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Interactive Background Particle Canvas -->
+    <canvas id="particle-canvas"></canvas>
+
     <!-- Product Landing Page Container -->
     <div id="landing-container" class="landing-page-wrapper">
         <!-- Floating Nav Bar -->
@@ -223,6 +226,10 @@
             
             <div class="header-right">
                 <div class="status-panel">
+                    <button id="sfx-toggle-btn" class="status-badge sfx-badge" title="Toggle Cyberpunk Sound Effects">
+                        <span class="status-icon">🔊</span>
+                        <span class="status-text">SFX ON</span>
+                    </button>
                     <div id="ws-status" class="status-badge offline">
                         <span class="pulse-dot"></span>
                         <span class="status-text">Broker Offline</span>
@@ -256,6 +263,21 @@
                         <span class="card-icon">⚙️</span>
                     </div>
                     <div class="card-body">
+                        <!-- Urban Crisis Scenario Presets -->
+                        <div class="control-group">
+                            <div class="control-label">
+                                <span>Urban Crisis Scenario Presets</span>
+                                <span class="badge logistics-badge">Presets</span>
+                            </div>
+                            <div class="scenario-preset-grid" id="scenario-preset-grid">
+                                <button class="preset-btn active" data-scenario="carnival" title="Grand Street Carnival">🎉 Carnival</button>
+                                <button class="preset-btn" data-scenario="water_main" title="Downtown Water Main Burst">💧 Water Burst</button>
+                                <button class="preset-btn" data-scenario="vip_convoy" title="VIP Presidential Convoy">🚨 VIP Convoy</button>
+                                <button class="preset-btn" data-scenario="subway_outage" title="Metropolitan Subway Outage">🚇 Subway Out</button>
+                            </div>
+                            <span id="scenario-desc" class="slider-helper" style="margin-top: 4px; color: var(--text-secondary);">Preset: Grand Street Carnival (Standard event negotiation)</span>
+                        </div>
+
                         <!-- Sliders -->
                         <div class="control-group">
                             <div class="control-label">
@@ -597,6 +619,13 @@
                         <div class="judge-summary-wrapper">
                             <h3>Evaluation Summary</h3>
                             <p id="judge-summary-text" class="text-muted">The evaluator has not received the final negotiated agreement yet.</p>
+                        </div>
+
+                        <!-- Audit Certificate Export Button -->
+                        <div class="audit-export-wrapper" style="margin-top: 15px; text-align: center;">
+                            <button id="export-audit-btn" class="secondary-btn btn-small" style="width: 100%; border-color: rgba(139, 92, 246, 0.4); color: var(--judge-color); font-weight: 700;">
+                                📜 Export Signed Audit Certificate (JSON)
+                            </button>
                         </div>
                     </div>
                 </div>

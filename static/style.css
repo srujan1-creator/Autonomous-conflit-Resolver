@@ -2505,3 +2505,98 @@ body {
     color: #fff;
     transform: scale(1.1);
 }
+
+/* ==========================================================================
+   Ultra-Premium UI Upgrades: Particle Canvas, SFX Toggle, Scenario Presets
+   ========================================================================== */
+#particle-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.65;
+}
+
+/* SFX Audio Toggle Badge */
+.sfx-badge {
+    background: rgba(124, 58, 237, 0.12);
+    border: 1px solid rgba(124, 58, 237, 0.35);
+    color: #c084fc;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'Outfit', sans-serif;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    outline: none;
+}
+
+.sfx-badge:hover {
+    transform: scale(1.05);
+    background: rgba(124, 58, 237, 0.25);
+    box-shadow: 0 0 12px rgba(124, 58, 237, 0.4);
+}
+
+.sfx-badge.muted {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: var(--text-secondary);
+}
+
+/* Scenario Preset Buttons */
+.scenario-preset-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.preset-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+    padding: 8px 10px;
+    border-radius: 10px;
+    font-size: 11.5px;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    outline: none;
+}
+
+.preset-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.preset-btn.active {
+    background: rgba(124, 58, 237, 0.18);
+    border-color: rgba(139, 92, 246, 0.6);
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.25);
+}
+
+/* Audit Certificate Button */
+#export-audit-btn {
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#export-audit-btn:hover {
+    background: rgba(139, 92, 246, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}

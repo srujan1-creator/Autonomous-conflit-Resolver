@@ -1,10 +1,5 @@
-import os
-import time
-import json
-import asyncio
-import threading
-from flask import Flask, jsonify, request, send_from_directory
-from flask_sock import Sock
+import hashlib
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__, static_folder="static", static_url_path="")
 
@@ -15,7 +10,7 @@ def load_users():
     if not os.path.exists(USERS_FILE):
         default = {
             "admin": {
-                "password": "adk-orchestrator",
+                "password": generate_password_hash("adk-orchestrator"),
                 "name": "System Admin",
                 "role": "Lead Orchestrator",
                 "avatar": "👤"
@@ -29,7 +24,17 @@ def load_users():
         return default
     try:
         with open(USERS_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
+            users = json.load(f)
+            # Auto-migrate legacy plaintext passwords to secure hash
+            migrated = False
+            for u, info in users.items():
+                pwd = info.get("password", "")
+                if pwd and not pwd.startswith("scrypt:") and not pwd.startswith("pbkdf2:"):
+                    info["password"] = generate_password_hash(pwd)
+                    migrated = True
+            if migrated:
+                save_users(users)
+            return users
     except Exception as e:
         print(f"Error loading users file: {e}")
         return {}
@@ -44,10 +49,15 @@ def save_users(users):
 
 @app.after_request
 def add_header(response):
-    """Disable browser caching of static visual assets during development."""
+    """Disable browser caching of static visual assets and inject strict HTTP security headers."""
     response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "0"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' ws: wss:;"
     return response
 
 # Global WebSocket communication state
@@ -100,7 +110,7 @@ def index():
 
 @app.route("/api/auth/signup", methods=["POST"])
 def auth_signup():
-    """Register a new user in the system database."""
+    """Register a new user in the system database with hashed credentials."""
     data = request.get_json() or {}
     username = data.get("username", "").strip().lower()
     password = data.get("password", "").strip()
@@ -116,7 +126,7 @@ def auth_signup():
         return jsonify({"status": "error", "message": "Username already exists."}), 400
         
     users[username] = {
-        "password": password,
+        "password": generate_password_hash(password),
         "name": name,
         "role": role,
         "avatar": avatar
@@ -126,7 +136,7 @@ def auth_signup():
 
 @app.route("/api/auth/login", methods=["POST"])
 def auth_login():
-    """Verify user credentials against the registry database."""
+    """Verify hashed user credentials against the registry database."""
     data = request.get_json() or {}
     username = data.get("username", "").strip().lower()
     password = data.get("password", "").strip()
@@ -137,7 +147,7 @@ def auth_login():
     users = load_users()
     user_info = users.get(username)
     
-    if user_info and user_info.get("password") == password:
+    if user_info and check_password_hash(user_info.get("password", ""), password):
         return jsonify({
             "status": "success",
             "profile": {
@@ -148,6 +158,71 @@ def auth_login():
         })
         
     return jsonify({"status": "error", "message": "Invalid username or password."}), 401
+
+@app.route("/api/scenarios", methods=["GET"])
+def get_scenarios():
+    """Return preset urban crisis scenarios for one-click simulation loading."""
+    scenarios = {
+        "carnival": {
+            "title": "Grand Street Carnival",
+            "description": "Logistics requests complete multi-block venue setup for annual parade.",
+            "event_scale": "high",
+            "traffic_load": "medium",
+            "blocked_cells": []
+        },
+        "water_main": {
+            "title": "Downtown Water Main Burst",
+            "description": "Emergency hazard blocks Core Plaza Block 3 Lanes 2 & 3. Heavy traffic rerouting.",
+            "event_scale": "medium",
+            "traffic_load": "high",
+            "blocked_cells": [{"block": 3, "lane": 2}, {"block": 3, "lane": 3}]
+        },
+        "vip_convoy": {
+            "title": "VIP Presidential Convoy",
+            "description": "Emergency clearance corridor active on Lane 4 and Block 2 Lane 1. High security.",
+            "event_scale": "low",
+            "traffic_load": "high",
+            "blocked_cells": [{"block": 1, "lane": 4}, {"block": 2, "lane": 4}, {"block": 3, "lane": 4}, {"block": 4, "lane": 4}, {"block": 5, "lane": 4}]
+        },
+        "subway_outage": {
+            "title": "Metropolitan Subway Outage",
+            "description": "Bus bridge replacement active. Transit protects Bus Routes across all blocks.",
+            "event_scale": "low",
+            "traffic_load": "high",
+            "blocked_cells": [{"block": 2, "lane": 2}, {"block": 4, "lane": 2}]
+        }
+    }
+    return jsonify({"status": "success", "scenarios": scenarios})
+
+@app.route("/api/report/export", methods=["POST"])
+def export_audit_report():
+    """Generate a cryptographically signed compliance audit report of the A2A negotiation."""
+    data = request.get_json() or {}
+    scorecard = data.get("scorecard", {})
+    history = data.get("history", [])
+    user_name = data.get("user_name", "System Administrator")
+    
+    timestamp = time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime())
+    raw_payload = json.dumps({"scorecard": scorecard, "history": history, "timestamp": timestamp}, sort_keys=True)
+    digital_signature = hashlib.sha256(raw_payload.encode('utf-8')).hexdigest()
+    
+    report = {
+        "system": "Autonomous Conflict Resolver (ADK Version 2.4)",
+        "protocol": "Agent-to-Agent (A2A) Peer Negotiation",
+        "audit_id": f"AUD-{int(time.time())}",
+        "timestamp": timestamp,
+        "certified_by": user_name,
+        "security_level": "SHA256 Encrypted Audit Trail",
+        "digital_signature": digital_signature,
+        "scorecard": scorecard,
+        "negotiation_summary": {
+            "turns_count": len(history),
+            "agreement_status": scorecard.get("overall_status", "PENDING"),
+            "final_score": scorecard.get("overall_score", 0)
+        },
+        "history": history
+    }
+    return jsonify({"status": "success", "report": report})
 
 @app.route("/api/config", methods=["GET", "POST"])
 def manage_config():

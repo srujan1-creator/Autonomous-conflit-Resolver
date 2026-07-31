@@ -1010,8 +1010,339 @@ document.querySelectorAll(".avenue-cell").forEach(cell => {
                 blockedCells.push({ block, lane });
                 cell.className = "avenue-cell cell-blocked";
             }
+            playUiSound("click");
             console.log("Blocked cells state:", blockedCells);
         }
     });
 });
+
+
+// ==========================================================================
+// Ultra-Premium Web Audio API Synthesizer (Cyberpunk SFX Engine)
+// ==========================================================================
+let audioCtx = null;
+let sfxEnabled = true;
+const sfxToggleBtn = document.getElementById("sfx-toggle-btn");
+
+function initAudioContext() {
+    if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) {
+            audioCtx = new AudioContext();
+        }
+    }
+    if (audioCtx && audioCtx.state === "suspended") {
+        audioCtx.resume();
+    }
+}
+
+function playUiSound(type) {
+    if (!sfxEnabled) return;
+    try {
+        initAudioContext();
+        if (!audioCtx) return;
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+
+        if (type === "click") {
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(600, now);
+            osc.frequency.exponentialRampToValueAtTime(300, now + 0.08);
+            gain.gain.setValueAtTime(0.12, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+            osc.start(now);
+            osc.stop(now + 0.08);
+        } else if (type === "pulse") {
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(320, now);
+            osc.frequency.exponentialRampToValueAtTime(140, now + 0.15);
+            gain.gain.setValueAtTime(0.15, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+            osc.start(now);
+            osc.stop(now + 0.15);
+        } else if (type === "success") {
+            // High chord sequence
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(523.25, now); // C5
+            osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+            osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+            gain.gain.setValueAtTime(0.15, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+            osc.start(now);
+            osc.stop(now + 0.35);
+        } else if (type === "error") {
+            osc.type = "sawtooth";
+            osc.frequency.setValueAtTime(160, now);
+            osc.frequency.exponentialRampToValueAtTime(80, now + 0.2);
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+            osc.start(now);
+            osc.stop(now + 0.2);
+        }
+    } catch (e) {
+        console.warn("Audio Context playback error:", e);
+    }
+}
+
+if (sfxToggleBtn) {
+    sfxToggleBtn.addEventListener("click", () => {
+        sfxEnabled = !sfxEnabled;
+        if (sfxEnabled) {
+            sfxToggleBtn.classList.remove("muted");
+            sfxToggleBtn.querySelector(".status-icon").textContent = "🔊";
+            sfxToggleBtn.querySelector(".status-text").textContent = "SFX ON";
+            playUiSound("click");
+        } else {
+            sfxToggleBtn.classList.add("muted");
+            sfxToggleBtn.querySelector(".status-icon").textContent = "🔇";
+            sfxToggleBtn.querySelector(".status-text").textContent = "SFX OFF";
+        }
+    });
+}
+
+// Bind audio blips to global action buttons
+document.querySelectorAll(".primary-btn, .secondary-btn, .quick-action-btn, .auth-tab").forEach(btn => {
+    btn.addEventListener("click", () => playUiSound("click"));
+});
+
+
+// ==========================================================================
+// Urban Crisis Scenario Presets & Audit Certificate Exporter
+// ==========================================================================
+const scenarioPresetGrid = document.getElementById("scenario-preset-grid");
+const scenarioDesc = document.getElementById("scenario-desc");
+const exportAuditBtn = document.getElementById("export-audit-btn");
+
+let currentScorecard = null;
+let currentNegotiationHistory = [];
+
+const defaultScenarios = {
+    carnival: {
+        title: "Grand Street Carnival",
+        description: "Preset: Grand Street Carnival (Standard multi-lane event setup)",
+        event_scale: 1, // Medium
+        traffic_load: 1, // Medium
+        blocked_cells: []
+    },
+    water_main: {
+        title: "Downtown Water Main Burst",
+        description: "Preset: Downtown Water Main Burst (Emergency road blocks on Block 3 Lanes 2 & 3)",
+        event_scale: 1,
+        traffic_load: 2, // High
+        blocked_cells: [{ block: 3, lane: 2 }, { block: 3, lane: 3 }]
+    },
+    vip_convoy: {
+        title: "VIP Presidential Convoy",
+        description: "Preset: VIP Presidential Convoy (Emergency Lane 4 strictly cleared across blocks 1-5)",
+        event_scale: 0, // Low
+        traffic_load: 2, // High
+        blocked_cells: [
+            { block: 1, lane: 4 }, { block: 2, lane: 4 }, { block: 3, lane: 4 }, { block: 4, lane: 4 }, { block: 5, lane: 4 }
+        ]
+    },
+    subway_outage: {
+        title: "Metropolitan Subway Outage",
+        description: "Preset: Metropolitan Subway Outage (Heavy bus bridge traffic; Lanes 1 & 2 priority)",
+        event_scale: 0, // Low
+        traffic_load: 2, // High
+        blocked_cells: [{ block: 2, lane: 2 }, { block: 4, lane: 2 }]
+    }
+};
+
+if (scenarioPresetGrid) {
+    scenarioPresetGrid.querySelectorAll(".preset-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            scenarioPresetGrid.querySelectorAll(".preset-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            
+            const scenarioKey = btn.getAttribute("data-scenario");
+            const config = defaultScenarios[scenarioKey] || defaultScenarios.carnival;
+            
+            // Set sliders
+            eventScaleSlider.value = config.event_scale;
+            trafficLoadSlider.value = config.traffic_load;
+            eventScaleVal.textContent = scaleMap[config.event_scale];
+            trafficLoadVal.textContent = scaleMap[config.traffic_load];
+            
+            // Set blocked cells
+            blockedCells = JSON.parse(JSON.stringify(config.blocked_cells));
+            sandboxToggle.checked = blockedCells.length > 0;
+            if (sandboxToggle.checked) {
+                sandboxHelp.classList.remove("hidden");
+            } else {
+                sandboxHelp.classList.add("hidden");
+            }
+            
+            // Update UI grid
+            updateAvenueGrid();
+            scenarioDesc.textContent = config.description;
+            playUiSound("click");
+        });
+    });
+}
+
+// Audit Export Handler
+if (exportAuditBtn) {
+    exportAuditBtn.addEventListener("click", async () => {
+        const userName = localStorage.getItem("user_profile_name") || "System Administrator";
+        try {
+            const res = await fetch("/api/report/export", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    scorecard: currentScorecard || { overall_score: 100, overall_status: "APPROVED" },
+                    history: currentNegotiationHistory,
+                    user_name: userName
+                })
+            });
+            const result = await res.json();
+            if (result.status === "success") {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(result.report, null, 4));
+                const downloadAnchor = document.createElement("a");
+                downloadAnchor.setAttribute("href", dataStr);
+                downloadAnchor.setAttribute("download", `${result.report.audit_id}.json`);
+                document.body.appendChild(downloadAnchor);
+                downloadAnchor.click();
+                downloadAnchor.remove();
+                
+                playUiSound("success");
+            }
+        } catch (e) {
+            console.error("Export Audit Certificate error:", e);
+            alert("Unable to generate audit report.");
+            playUiSound("error");
+        }
+    });
+}
+
+// Track history and scorecards for report export
+const originalHandleBrokerMessage = handleBrokerMessage;
+handleBrokerMessage = function(data) {
+    if (data.type === "negotiation_start") {
+        currentNegotiationHistory = [];
+        currentScorecard = null;
+    } else if (data.type === "agent_message") {
+        currentNegotiationHistory.push(data.payload);
+        playUiSound("pulse");
+    } else if (data.type === "judge_evaluation") {
+        currentScorecard = data.payload;
+        playUiSound("success");
+    }
+    originalHandleBrokerMessage(data);
+};
+
+
+// ==========================================================================
+// Interactive Canvas 2D Particle System (Neural Network Backdrop)
+// ==========================================================================
+function initParticleCanvas() {
+    const canvas = document.getElementById("particle-canvas");
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    let mouse = { x: width / 2, y: height / 2, active: false };
+
+    window.addEventListener("resize", () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    });
+
+    window.addEventListener("mousemove", (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+        mouse.active = true;
+    });
+
+    const particles = [];
+    const particleCount = Math.min(45, Math.floor(width / 30));
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * width;
+            this.y = Math.random() * height;
+            this.vx = (Math.random() - 0.5) * 0.8;
+            this.vy = (Math.random() - 0.5) * 0.8;
+            this.radius = Math.random() * 2 + 1;
+            this.color = Math.random() > 0.5 ? "rgba(139, 92, 246, " : "rgba(0, 240, 255, ";
+            this.alpha = Math.random() * 0.5 + 0.2;
+        }
+
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+
+            if (this.x < 0 || this.x > width) this.vx *= -1;
+            if (this.y < 0 || this.y > height) this.vy *= -1;
+
+            // Mouse attraction physics
+            if (mouse.active) {
+                const dx = mouse.x - this.x;
+                const dy = mouse.y - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 140) {
+                    this.x += dx * 0.015;
+                    this.y += dy * 0.015;
+                }
+            }
+        }
+
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color + this.alpha + ")";
+            ctx.shadowColor = this.color + "0.8)";
+            ctx.shadowBlur = 8;
+            ctx.fill();
+        }
+    }
+
+    for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, width, height);
+
+        // Draw node connection lines
+        for (let i = 0; i < particles.length; i++) {
+            particles[i].update();
+            particles[i].draw();
+
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < 130) {
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    const lineAlpha = (1 - dist / 130) * 0.25;
+                    ctx.strokeStyle = `rgba(139, 92, 246, ${lineAlpha})`;
+                    ctx.lineWidth = 0.8;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+}
+
+// Launch particle canvas on load
+document.addEventListener("DOMContentLoaded", () => {
+    initParticleCanvas();
+});
+initParticleCanvas();
+
 
