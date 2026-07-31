@@ -472,13 +472,13 @@ body {
 
 .network-container {
     width: 100%;
-    height: 200px;
+    height: 245px;
     position: relative;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.35);
     border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.03);
-    box-shadow: inset 0 4px 10px rgba(0,0,0,0.5);
-    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 4px 15px rgba(0,0,0,0.6);
+    overflow: visible;
 }
 
 .network-svg {
@@ -492,7 +492,7 @@ body {
 }
 
 .node-line {
-    stroke: rgba(255, 255, 255, 0.05);
+    stroke: rgba(255, 255, 255, 0.08);
     stroke-width: 2.5;
     stroke-linecap: round;
     transition: stroke 0.4s ease, stroke-width 0.4s ease;
@@ -501,13 +501,13 @@ body {
 .node-line.active-logistics {
     stroke: var(--logistics-color);
     stroke-width: 3.5;
-    filter: drop-shadow(0 0 6px var(--logistics-glow));
+    filter: drop-shadow(0 0 8px var(--logistics-glow));
 }
 
 .node-line.active-transit {
     stroke: var(--transit-color);
     stroke-width: 3.5;
-    filter: drop-shadow(0 0 6px var(--transit-glow));
+    filter: drop-shadow(0 0 8px var(--transit-glow));
 }
 
 /* SVG Line Pulse Photon */
@@ -537,18 +537,36 @@ body {
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.node-icon {
-    width: 44px;
-    height: 44px;
+.node-icon-img-wrapper {
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
-    background: #0f172a;
-    border: 2px solid var(--text-muted);
+    padding: 2px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05));
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.7), inset 0 0 8px rgba(255,255,255,0.1);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
-    transition: all 0.3s ease;
+    transition: all 0.35s ease;
+    overflow: hidden;
+}
+
+.node-3d-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    transition: transform 0.35s ease;
+}
+
+.network-node:hover .node-3d-img {
+    transform: scale(1.12);
+}
+
+.network-node:hover .node-icon-img-wrapper {
+    border-color: #ffffff;
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
 }
 
 .node-label {
@@ -557,57 +575,56 @@ body {
     margin-top: 6px;
     color: var(--text-primary);
     text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+    white-space: nowrap;
 }
 
 .node-subtitle {
     font-size: 9px;
     color: var(--text-secondary);
+    white-space: nowrap;
 }
 
 /* Positions of nodes in network container */
-.logistics-node { top: 22%; left: 16%; }
-.transit-node   { top: 22%; left: 84%; }
+.logistics-node { top: 22%; left: 20%; }
+.transit-node   { top: 22%; left: 80%; }
 .broker-node    { top: 48%; left: 50%; }
-.memory-node    { top: 78%; left: 16%; }
-.judge-node     { top: 78%; left: 84%; }
+.memory-node    { top: 76%; left: 20%; }
+.judge-node     { top: 76%; left: 80%; }
 
 /* Node glow states */
 .network-node.active-pulse {
-    transform: translate(-50%, -50%) scale(1.12);
+    transform: translate(-50%, -50%) scale(1.15);
 }
 
-.network-node.active-pulse .node-icon {
-    border-color: #ffffff;
-}
-
-.logistics-node.active-pulse .node-icon {
+.logistics-node.active-pulse .node-icon-img-wrapper {
     border-color: var(--logistics-color);
-    box-shadow: 0 0 20px var(--logistics-glow);
+    box-shadow: 0 0 25px var(--logistics-glow);
 }
 
-.transit-node.active-pulse .node-icon {
+.transit-node.active-pulse .node-icon-img-wrapper {
     border-color: var(--transit-color);
-    box-shadow: 0 0 20px var(--transit-glow);
+    box-shadow: 0 0 25px var(--transit-glow);
 }
 
-.broker-node.active-pulse .node-icon {
+.broker-node.active-pulse .node-icon-img-wrapper {
     border-color: #ffffff;
-    box-shadow: 0 0 20px rgba(255,255,255,0.5);
-    animation: rotateBroker 2.5s linear infinite;
+    box-shadow: 0 0 25px rgba(255,255,255,0.7);
+    animation: pulseGlow 1.5s ease-in-out infinite alternate;
 }
 
-@keyframes rotateBroker {
-    100% { transform: rotate(360deg); }
+@keyframes pulseGlow {
+    0% { transform: scale(1); box-shadow: 0 0 15px rgba(255,255,255,0.5); }
+    100% { transform: scale(1.08); box-shadow: 0 0 30px rgba(139,92,246,0.9); }
 }
 
-.memory-node.active-pulse .node-icon {
+.memory-node.active-pulse .node-icon-img-wrapper {
     border-color: var(--success-color);
-    box-shadow: 0 0 20px var(--success-glow);
+    box-shadow: 0 0 25px var(--success-glow);
 }
 
-.judge-node.active-pulse .node-icon {
+.judge-node.active-pulse .node-icon-img-wrapper {
     border-color: var(--judge-color);
-    box-shadow: 0 0 20px var(--judge-glow);
+    box-shadow: 0 0 25px var(--judge-glow);
 }
 
 .network-telemetry {
