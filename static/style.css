@@ -2718,3 +2718,47 @@ body {
     border: 1.5px solid rgba(139, 92, 246, 0.6);
     box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
 }
+
+/* 3D Button Image Icons & Luxury Pill Buttons */
+.btn-3d-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.6);
+    margin-right: 10px;
+    vertical-align: middle;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    flex-shrink: 0;
+}
+
+.primary-btn, .nav-launch-btn, .hero-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px;
+    padding: 10px 24px;
+    border-radius: 30px !important;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.95), rgba(99, 102, 241, 0.95)) !important;
+    border: 1.5px solid rgba(167, 139, 250, 0.7) !important;
+    box-shadow: 0 4px 20px rgba(124, 58, 237, 0.5), inset 0 0 12px rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-family: 'Outfit', sans-serif !important;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+.primary-btn:hover, .nav-launch-btn:hover, .hero-btn:hover {
+    transform: translateY(-2px) scale(1.04) !important;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 1), rgba(124, 58, 237, 1)) !important;
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.8), 0 0 15px rgba(0, 240, 255, 0.6) !important;
+    border-color: #ffffff !important;
+}
+
+.primary-btn:hover .btn-3d-icon, .nav-launch-btn:hover .btn-3d-icon, .hero-btn:hover .btn-3d-icon {
+    transform: scale(1.18) rotate(8deg);
+    border-color: #ffffff;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.8);
+}
