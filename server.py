@@ -56,10 +56,13 @@ def save_users(users):
 
 @app.after_request
 def add_header(response):
-    """Disable browser caching of static visual assets and inject strict HTTP security headers."""
-    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
-    response.headers["Pragma"] = "no-cache"
-    response.headers["Expires"] = "0"
+    """Enable high-performance browser caching for static assets while keeping dynamic APIs fresh."""
+    path = request.path
+    if path.startswith("/images/") or path.endswith((".css", ".js", ".jpg", ".png", ".svg", ".woff2", ".ico")):
+        response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+    else:
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-XSS-Protection"] = "1; mode=block"

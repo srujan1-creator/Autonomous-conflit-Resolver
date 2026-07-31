@@ -1334,8 +1334,8 @@ function initParticleCanvas() {
             if (mouse.active) {
                 const dx = mouse.x - this.x;
                 const dy = mouse.y - this.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 140) {
+                const distSq = dx * dx + dy * dy;
+                if (distSq < 19600) { // 140^2
                     this.x += dx * 0.015;
                     this.y += dy * 0.015;
                 }
@@ -1347,7 +1347,7 @@ function initParticleCanvas() {
             ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
             ctx.fillStyle = this.color + this.alpha + ")";
             ctx.shadowColor = this.color + "0.8)";
-            ctx.shadowBlur = 8;
+            ctx.shadowBlur = 4;
             ctx.fill();
         }
     }
@@ -1359,7 +1359,8 @@ function initParticleCanvas() {
     function animate() {
         ctx.clearRect(0, 0, width, height);
 
-        // Draw node connection lines
+        // Draw node connection lines with squared distance pre-filter
+        const maxDistSq = 14400; // 120^2
         for (let i = 0; i < particles.length; i++) {
             particles[i].update();
             particles[i].draw();
@@ -1367,13 +1368,14 @@ function initParticleCanvas() {
             for (let j = i + 1; j < particles.length; j++) {
                 const dx = particles[i].x - particles[j].x;
                 const dy = particles[i].y - particles[j].y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
+                const distSq = dx * dx + dy * dy;
 
-                if (dist < 130) {
+                if (distSq < maxDistSq) {
+                    const dist = Math.sqrt(distSq);
                     ctx.beginPath();
                     ctx.moveTo(particles[i].x, particles[i].y);
                     ctx.lineTo(particles[j].x, particles[j].y);
-                    const lineAlpha = (1 - dist / 130) * 0.25;
+                    const lineAlpha = (1 - dist / 120) * 0.25;
                     ctx.strokeStyle = `rgba(139, 92, 246, ${lineAlpha})`;
                     ctx.lineWidth = 0.8;
                     ctx.stroke();
@@ -1387,10 +1389,11 @@ function initParticleCanvas() {
     animate();
 }
 
-// Launch particle canvas on load
-document.addEventListener("DOMContentLoaded", () => {
+// Single initialization call
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initParticleCanvas);
+} else {
     initParticleCanvas();
-});
-initParticleCanvas();
+}
 
 
